@@ -2,8 +2,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Question, Subject } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const questionSchema = {
   type: Type.OBJECT,
   properties: {
@@ -18,6 +16,13 @@ const questionSchema = {
 
 export const generatePracticeQuestion = async (subject: Subject, topic?: string, previousQuestions: string[] = []): Promise<Question | null> => {
   try {
+    const key = process.env.API_KEY;
+    if (!key || key === "undefined") {
+      console.error("Gemini API Key is missing. Check Vercel Env Variables.");
+      return null;
+    }
+
+    const ai = new GoogleGenAI({ apiKey: key });
     const prompt = `Generate a high-yield JEE level ${subject} MCQ. ${topic ? `Topic: ${topic}.` : ''} 
     
     STRICT FORMATTING RULE: 
@@ -27,18 +32,25 @@ export const generatePracticeQuestion = async (subject: Subject, topic?: string,
     4. Provide the response for Cheenu, a top-tier IIT aspirant.`;
     
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-3-flash-preview',
       contents: prompt,
       config: { responseMimeType: "application/json", responseSchema: questionSchema, temperature: 0.7 },
     });
     const text = response.text;
     if (!text) return null;
     return { id: crypto.randomUUID(), subject, ...JSON.parse(text) };
-  } catch (error) { return null; }
+  } catch (error) { 
+    console.error("Question Generation Error:", error);
+    return null; 
+  }
 };
 
 export const getChatResponse = async (history: {role: string, parts: {text: string}[]}[], message: string) => {
   try {
+    const key = process.env.API_KEY;
+    if (!key || key === "undefined") return "API Key Configuration Error. Please check system environment.";
+
+    const ai = new GoogleGenAI({ apiKey: key });
     const chat = ai.chats.create({
       model: 'gemini-3-flash-preview',
       config: {
@@ -47,13 +59,22 @@ export const getChatResponse = async (history: {role: string, parts: {text: stri
     });
     const result = await chat.sendMessage({ message });
     return result.text;
-  } catch (error) { return "Cortex sync issue. I'm ALOO, still here though, just retry."; }
+  } catch (error) { 
+    console.error("Chat Error:", error);
+    return "Cortex sync issue. I'm ALOO, still here though, just retry."; 
+  }
 };
 
 export const generateMotivationalQuote = async (): Promise<string> => {
   try {
+    const key = process.env.API_KEY;
+    if (!key || key === "undefined") return "Focus on the goal, Cheenu.";
+
+    const ai = new GoogleGenAI({ apiKey: key });
     const prompt = `Generate a short (max 15 words) motivational quote for Cheenu about his IIT-JEE 2026 goal.`;
     const response = await ai.models.generateContent({ model: 'gemini-3-flash-preview', contents: prompt });
     return response.text?.trim() || "The gates of IIT are waiting for your logic, Cheenu.";
-  } catch (error) { return "Your seat at the IIT is being reserved. Keep pushing, Cheenu!"; }
+  } catch (error) { 
+    return "Your seat at the IIT is being reserved. Keep pushing, Cheenu!"; 
+  }
 };
