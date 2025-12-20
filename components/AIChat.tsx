@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, Send, X, Bot, Loader2 } from 'lucide-react';
 import { getChatResponse } from '../services/gemini';
@@ -9,7 +10,7 @@ const AIChat: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([{
     id: 'welcome',
     role: 'model',
-    text: "Hi Cheenu! I'm ALOO, your JEE logic companion. Need help cracking a complex problem or just a quick boost of motivation? I've got your back. I'll explain things so simply that they'll stick forever!",
+    text: "Hi Cheenu! I'm ALOO, your JEE companion. Ready to master Calculus or solve some Organic mechanisms? Let's get you into an IIT!",
     timestamp: new Date()
   }]);
   const [input, setInput] = useState('');
@@ -42,12 +43,13 @@ const AIChat: React.FC = () => {
         parts: [{ text: m.text }] 
       }));
       const responseText = await getChatResponse(history, currentInput);
-      setMessages(prev => [...prev, { 
+      const modelMsg: ChatMessage = { 
         id: crypto.randomUUID(), 
         role: 'model', 
         text: responseText, 
         timestamp: new Date() 
-      }]);
+      };
+      setMessages(prev => [...prev, modelMsg]);
     } catch (e) {
       setMessages(prev => [...prev, { 
         id: crypto.randomUUID(), 
