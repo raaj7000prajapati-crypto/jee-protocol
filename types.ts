@@ -1,3 +1,4 @@
+
 export enum Subject {
   PHYSICS = 'Physics',
   CHEMISTRY = 'Chemistry',
@@ -23,7 +24,7 @@ export interface Task {
 export interface UserProgress {
   physicsScore: number;
   chemistryScore: number;
-  mathematicsScore: number; // Reverted back
+  mathScore: number;
   totalQuestionsSolved: number;
   dailyQuote?: string;
   lastQuoteDate?: string;
