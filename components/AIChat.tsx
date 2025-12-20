@@ -10,7 +10,7 @@ const AIChat: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([{
     id: 'welcome',
     role: 'model',
-    text: "Hi Cheenu! I'm ALOO, your JEE companion. Ready to master Calculus or solve some Organic mechanisms? Let's get you into an IIT!",
+    text: "Hi Cheenu! I'm ALOO, your JEE mentor. Ready to master the laws of physics or crack some complex equations? Let's get you to that IIT!",
     timestamp: new Date()
   }]);
   const [input, setInput] = useState('');
@@ -31,7 +31,14 @@ const AIChat: React.FC = () => {
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
-    const userMsg: ChatMessage = { id: crypto.randomUUID(), role: 'user', text: input, timestamp: new Date() };
+    
+    const userMsg: ChatMessage = { 
+      id: crypto.randomUUID(), 
+      role: 'user', 
+      text: input, 
+      timestamp: new Date() 
+    };
+    
     setMessages(prev => [...prev, userMsg]);
     const currentInput = input;
     setInput('');
@@ -42,13 +49,16 @@ const AIChat: React.FC = () => {
         role: m.role, 
         parts: [{ text: m.text }] 
       }));
+      
       const responseText = await getChatResponse(history, currentInput);
+      
       const modelMsg: ChatMessage = { 
         id: crypto.randomUUID(), 
         role: 'model', 
-        text: responseText, 
+        text: responseText || "I'm having trouble connecting to the logic core, Cheenu. Try again.", 
         timestamp: new Date() 
       };
+      
       setMessages(prev => [...prev, modelMsg]);
     } catch (e) {
       setMessages(prev => [...prev, { 
@@ -80,7 +90,7 @@ const AIChat: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-[10px] font-bold uppercase tracking-widest text-blue-500">ALOO AI</span>
-              <span className="text-[9px] text-slate-500 font-bold">Guiding Cheenu</span>
+              <span className="text-[9px] text-slate-500 font-bold">JEE Mentor</span>
             </div>
           </div>
           <button 
@@ -122,7 +132,7 @@ const AIChat: React.FC = () => {
             <input 
               value={input} 
               onChange={(e) => setInput(e.target.value)} 
-              placeholder="Ask anything, Cheenu..." 
+              placeholder="Solve a doubt, Cheenu..." 
               className="flex-1 bg-slate-950 border border-slate-800 text-white px-5 py-3 rounded-2xl focus:outline-none focus:border-blue-500/50 text-[13px] placeholder:text-slate-700" 
             />
             <button 
