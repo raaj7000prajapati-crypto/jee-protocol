@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { Subject, Question } from '../types';
 import { generatePracticeQuestion } from '../services/gemini';
-import { CheckCircle2, XCircle, ArrowRight, Loader2, Binary, BrainCircuit, ArrowLeft, Microscope } from 'lucide-react';
+import { CheckCircle2, XCircle, ArrowRight, Loader2, BrainCircuit, ArrowLeft, Microscope, Sigma, Ruler } from 'lucide-react';
 import LatexRenderer from './LatexRenderer';
 
 interface QuizSectionProps {
@@ -13,22 +14,22 @@ interface QuizSectionProps {
 
 const TOPICS_BY_SUBJECT: Record<Subject, string[]> = {
   [Subject.PHYSICS]: [
-    "Units & Measurements", "Kinematics", "Laws of Motion", "Work, Energy & Power", 
-    "Rotational Motion", "Gravitation", "Properties of Matter", "Thermodynamics", 
+    "Units & Measurements", "Motion in a Straight Line", "Laws of Motion", "Work, Energy & Power", 
+    "Systems of Particles", "Gravitation", "Thermodynamics", "Kinetic Theory",
     "Oscillations & Waves", "Electrostatics", "Current Electricity", 
-    "Magnetism", "EM Induction & AC", "Optics", "Modern Physics", "Electronic Devices"
+    "Magnetic Effects of Current", "Optics", "Modern Physics", "Semiconductors"
   ],
   [Subject.CHEMISTRY]: [
-    "Atomic Structure", "Chemical Bonding", "Thermodynamics", "Equilibrium", 
-    "Redox & Electrochemistry", "Chemical Kinetics", "Surface Chemistry",
-    "S & P Block Elements", "D & F Block Elements", "Coordination Compounds", 
-    "General Organic Chemistry", "Hydrocarbons", "Alcohols & Phenols", "Aldehydes & Ketones", "Biomolecules"
+    "Some Basic Concepts", "Structure of Atom", "Classification of Elements", "Chemical Bonding", 
+    "Thermodynamics", "Equilibrium", "Redox Reactions", "Organic Chemistry Basics",
+    "Hydrocarbons", "Solutions", "Electrochemistry", "Chemical Kinetics", 
+    "P-Block Elements", "D & F Block Elements", "Biomolecules"
   ],
   [Subject.MATHEMATICS]: [
-    "Sets & Relations", "Complex Numbers", "Matrices & Determinants", "Permutations & Combinations", 
-    "Binomial Theorem", "Sequences & Series", "Limits & Continuity", "Differentiation", 
-    "Integral Calculus", "Differential Equations", "Coordinate Geometry", 
-    "Vector Algebra", "3D Geometry", "Probability", "Trigonometry", "Mathematical Reasoning"
+    "Sets, Relations & Functions", "Complex Numbers", "Matrices & Determinants", "Quadratic Equations",
+    "Permutations & Combinations", "Binomial Theorem", "Sequences & Series", 
+    "Limit, Continuity & Differentiability", "Integral Calculus", "Differential Equations",
+    "Coordinate Geometry", "Vector Algebra", "3D Geometry", "Probability", "Trigonometry"
   ]
 };
 
@@ -45,7 +46,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({
   const subjects = [
     { id: Subject.PHYSICS, icon: BrainCircuit, color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },
     { id: Subject.CHEMISTRY, icon: Microscope, color: 'text-sky-400 bg-sky-500/10 border-sky-500/20' },
-    { id: Subject.MATHEMATICS, icon: Binary, color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' },
+    { id: Subject.MATHEMATICS, icon: Sigma, color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' },
   ];
 
   const handleSubjectSelect = (sub: Subject) => {
@@ -86,7 +87,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({
   return (
     <div id="practice-section" className="max-w-4xl mx-auto px-4 mb-24 transition-all duration-500">
       <div className="flex items-center gap-6 mb-12">
-        <h2 className="text-xl font-bold text-slate-100 tracking-wider">Concept Solves</h2>
+        <h2 className="text-xl font-bold text-slate-100 tracking-wider">JEE Practice Protocol</h2>
         <div className="h-px bg-slate-800 flex-1"></div>
       </div>
 
@@ -110,7 +111,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({
            <button onClick={() => setSelectedSubject(null)} className="mb-8 flex items-center text-slate-500 hover:text-blue-400 text-[10px] font-bold uppercase tracking-widest transition">
              <ArrowLeft size={14} className="mr-2" /> Change Subject
            </button>
-           <h3 className="text-lg font-bold text-white mb-6 pl-4 border-l-2 border-blue-500">Syllabus: {selectedSubject}</h3>
+           <h3 className="text-lg font-bold text-white mb-6 pl-4 border-l-2 border-blue-500">JEE Syllabus: {selectedSubject}</h3>
            <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4">
              {TOPICS_BY_SUBJECT[selectedSubject].map((topic) => (
                <button
@@ -141,7 +142,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 className="animate-spin text-blue-500 mb-6" size={48} />
-                <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">Computing JEE Logic...</p>
+                <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">Executing Matrix Operations...</p>
               </div>
             ) : currentQuestion ? (
               <div className="animate-fade-in">
@@ -159,7 +160,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({
                     if (!showResult) {
                       btnClass += "bg-slate-900/40 border-slate-800 text-slate-400 hover:border-blue-500/50 hover:bg-slate-800";
                     } else if (isCorrect) {
-                      btnClass += "border-emerald-500/50 bg-emerald-500/10 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]";
+                      btnClass += "border-blue-500/50 bg-blue-500/10 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.1)]";
                     } else if (isSelected && !isCorrect) {
                       btnClass += "border-rose-500/50 bg-rose-500/10 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.1)]";
                     } else {
@@ -182,7 +183,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({
                         <span className="flex-1 pr-4">
                           <LatexRenderer text={option} />
                         </span>
-                        {showResult && isCorrect && <CheckCircle2 className="text-emerald-500 flex-shrink-0 animate-bounce-in" size={24} />}
+                        {showResult && isCorrect && <CheckCircle2 className="text-blue-500 flex-shrink-0 animate-bounce-in" size={24} />}
                         {showResult && isSelected && !isCorrect && <XCircle className="text-rose-500 flex-shrink-0 animate-bounce-in" size={24} />}
                       </button>
                     );
